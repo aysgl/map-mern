@@ -129,7 +129,7 @@ const App = () => {
               >
                 <Location
                   size="26"
-                  color={pin.username === currentUser ? "#FF8A65" : "#697689"}
+                  color={pin.username === currentUser ? "#697689" : "#FF8A65"}
                   variant="Bulk"
                 />
               </Marker>
