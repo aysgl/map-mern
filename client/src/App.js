@@ -5,9 +5,12 @@ import axios from "axios";
 import { format } from "timeago.js";
 import "./style.scss";
 import "mapbox-gl/dist/mapbox-gl.css";
+import Register from "./components/Register";
+import Login from "./components/Login";
 
 const App = () => {
-  const currentUser = "Aysgl";
+  const myStorage = window.localStorage;
+  const [currentUser, setCurrentUser] = useState(myStorage.getItem("username"));
   const mapRef = useRef(null);
 
   const [viewport, setViewport] = useState({
@@ -19,6 +22,8 @@ const App = () => {
   const [pins, setPins] = useState([]);
   const [selectPin, setSelectPin] = useState();
   const [newPlace, setNewPlace] = useState(null);
+  const [showRegister, setShowRegister] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -60,9 +65,13 @@ const App = () => {
   const handleAddClick = (e) => {
     e.preventDefault();
     const { lng, lat } = e.lngLat;
-    const newPin = { latitude: lat, longitude: lng };
-    setPins([...pins, newPin]);
     setNewPlace({ lat, lng });
+    setForm({
+      title: "",
+      description: "",
+      rating: 1,
+      username: currentUser,
+    });
   };
 
   const handleSubmit = (e) => {
@@ -89,6 +98,11 @@ const App = () => {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    myStorage.removeItem("user");
   };
 
   return (
@@ -185,6 +199,25 @@ const App = () => {
           </Popup>
         )}
       </Map>
+
+      <div className="buttons">
+        {currentUser ? (
+          <button onClick={handleLogout}>Log Out</button>
+        ) : (
+          <div>
+            <button onClick={() => setShowLogin(true)}>Log In</button>
+            <button onClick={() => setShowRegister(true)}>Register</button>
+          </div>
+        )}
+        {showRegister && <Register setShowRegister={setShowRegister} />}
+        {showLogin && (
+          <Login
+            setShowLogin={setShowLogin}
+            setCurrentUser={setCurrentUser}
+            myStorage={myStorage}
+          />
+        )}
+      </div>
     </div>
   );
 };
